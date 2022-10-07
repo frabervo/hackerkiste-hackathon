@@ -1,0 +1,25 @@
+name: 'Stage 1 AKS Cluster'   # The name of the pipeline
+on: [workflow_dispatch]       # means: The Pipeline has to be started Manually : define how the pipeline will started
+# https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_dispatch
+
+jobs:
+  Terraform:              # the first Job
+    name: 'Terraform'
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      TF_VAR_uniquename: ${{ secrets.UNIQUE_NAME }}
+    runs-on: ubuntu-latest        # runner environment
+    environment: production       # Flag zur Unterscheidung der Umgebung
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./stage_1_AKS_Cluster
+    outputs:                    # Logs für die Pipeline 
+      aks: ${{ steps.tfout.outputs.aks }}
+      rg: ${{ steps.tfout.outputs.rg }}
+      acr_name: ${{ steps.tfout.outputs.acr_name }}
+      acr_url: ${{ steps.tfout.outputs.acr_url }}
